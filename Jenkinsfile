@@ -30,8 +30,8 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('', DOCKER_CREDENTIALS_ID) {
-                        dockerImage.push("${DOCKERHUB_REPO}:${env.BUILD_ID}")
-                        dockerImage.push("${DOCKERHUB_REPO}:latest")
+                        dockerImage.push("${env.BUILD_ID}")
+                        dockerImage.push("latest")
                     }
                 }
             }
