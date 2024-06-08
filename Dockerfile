@@ -1,20 +1,24 @@
-# Use an official Node.js 18 (latest) runtime as a parent image
+# Use the official Node.js image from the Docker Hub
 FROM node:18-alpine
 
-# Set the working directory
+# Create and change to the app directory
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json
+# Copy the package.json and package-lock.json files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install --only=production
+# Install the project dependencies
+RUN npm install
 
-# Copy the rest of the application code
+# Copy the project files
 COPY . .
 
 # Expose the port the app runs on
-EXPOSE 4000
+EXPOSE 3000
+
+# Define the environment variables
+ENV MONGODB_URL=""
+ENV PORT=3000
 
 # Command to run the application
-CMD [ "npm", "start" ]
+CMD ["node", "app.js"]
