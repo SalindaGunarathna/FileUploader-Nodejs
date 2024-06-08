@@ -84,7 +84,11 @@ exports.findSingleFile = async (req, res, next) => {
         if (req.body.filepath) {
 
             const {filepath} = req.body
+
             const file = await File.find({ path: filepath })
+            if (!file){
+                throw createHttpError(404,"image not found ")
+            }
             res.status(200).json(file)
 
         } else {
