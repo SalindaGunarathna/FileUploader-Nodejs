@@ -13,6 +13,7 @@ RUN npm install --only=production
 # Copy the rest of the application code
 COPY . .
 
+RUN mkdir -p /usr/src/app/public/file && chmod -R 755 /usr/src/app/public
 # Expose the port the app runs on
 EXPOSE 4000
 

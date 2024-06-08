@@ -4,77 +4,70 @@ require("dotenv").config();
 const path = require("path");
 const fs = require("fs");
 const { v4: uuidv4 } = require('uuid');
-const file = require("../mode/file");
+const File = require("../models/file"); // Ensure correct model import
+
+const publicDirectory = path.join(__dirname, "..", "..", "public");
+const fileDirectory = path.join(publicDirectory, "file");
 
 exports.uploadFile = async (req, res, next) => {
-
     try {
-
         const image = req.files.image;
         if (!image) {
-            throw createHttpError(404, "image not found");
+            throw createHttpError(404, "Image not found");
         }
         if (!image.mimetype.startsWith("image")) {
             throw createHttpError(400, "Only images are allowed");
         }
 
-        // Generate a unique identifier (UUID)
         const uniqueId = uuidv4();
-        // Extract image extension 
-        const fileExtension = image.name.split('.').pop();
-        // Construct a unique filename by appending the uniqueId and image extension
-        const uniqueFilename = `${uniqueId}.${fileExtension}`;
-        // Set the local image path with the unique filename
-        let filDirectoryepath = " "; // default
+        const fileExtension = path.extname(image.name);
+        const uniqueFilename = `${uniqueId}${fileExtension}`;
+        const filePath = path.join(fileDirectory, uniqueFilename);
 
-        filDirectoryepath = path.join(__dirname, '..', '..', 'public', 'file', uniqueFilename);
+        await image.mv(filePath); // Use Promise here
 
-        image.mv(filDirectoryepath); // save image to local location
+        const dbFilePath = `file/${uniqueFilename}`;
 
-        // in database  only store relative path for thatdefine filepath
-        const filepath = `file/${uniqueFilename}`;
-
-        const newFile = new file({
+        const newFile = new File({
             name: image.name,
-            path: filepath,
-            directory: filDirectoryepath,
+            path: dbFilePath,
+            directory: filePath,
             size: image.size
         });
-
-        // save data to database
-
 
         await newFile.save();
         res.status(201).json(newFile);
 
     } catch (error) {
-        console.log(error)
-        next(error)
+        console.error(error);
+        next(error);
     }
 }
 
 exports.deleteFile = async (req, res, next) => {
     try {
-        const {filepath} = req.body;
-
-        let filDirectoryepath = path.join(__dirname, '..', '..', 'public', filepath);
-        
-        // delete image from local location
-        if (filDirectoryepath != " ") {
-            fs.unlink(filDirectoryepath, (err) => {
-                if (err) {
-                    console.error("Unable to delete local image file:", err);
-                } else {
-                    console.log("Local image file deleted successfully.");
-                }
-            });
-
+        const { filepath } = req.body;
+        if (!filepath) {
+            throw createHttpError(400, "File path is required");
         }
-        // delete data from database
-        await file.deleteOne({ path: filepath });
 
-        return 204;
+        const fileToDeletePath = path.join(publicDirectory, filepath);
+
+        fs.unlink(fileToDeletePath, async (err) => {
+            if (err) {
+                console.error("Unable to delete local image file:", err);
+                throw createHttpError(500, "File deletion failed");
+            }
+
+            console.log("Local image file deleted successfully.");
+
+            await File.deleteOne({ path: filepath });
+
+            res.sendStatus(204);
+        });
+
     } catch (error) {
+        console.error(error);
         next(error);
     }
 }
