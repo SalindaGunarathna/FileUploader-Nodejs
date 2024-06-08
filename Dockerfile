@@ -17,7 +17,7 @@ COPY . .
 EXPOSE 4000
 
 # Define the environment variables
-ENV MONGODB_URL=""
+ENV MONGO_URI=""
 ENV PORT=3000
 
 # Command to run the application
