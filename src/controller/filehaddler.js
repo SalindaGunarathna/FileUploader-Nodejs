@@ -61,9 +61,9 @@ exports.deleteFile = async (req, res, next) => {
 
             console.log("Local image file deleted successfully.");
 
-            await File.deleteOne({ path: filepath });
+          const image =  await File.deleteOne({ path: filepath });
 
-            res.sendStatus(204);
+            res.sendStatus(204).json({ message: `image  deleted successfully. Path: ${filePath}` });
         });
 
     } catch (error) {
@@ -75,7 +75,7 @@ exports.deleteFile = async (req, res, next) => {
 exports.findSingleFile = async (req, res, next) => {
     try {
 
-        if (req.File) {
+        if (req.body.path) {
             const filepath = req.body
             const file = await File.find({ path: filepath })
             res.sendStatus(200).join(file)
