@@ -5,6 +5,11 @@ pipeline {
         DOCKER_CREDENTIALS_ID = 'dockerhub' 
         DOCKERHUB_REPO = 'salindadocker/fileuploder' 
         DOCKERHUB_API_URL = "https://hub.docker.com/v2/repositories/${DOCKERHUB_REPO}/"
+        HOST_SSH_CREDENTIALS ="hostmachine-ssh-id"
+        HOST_MACHINE_IP = 'host-ip' 
+        HOST_MACHINE_USER = 'client' 
+        MONGO_URI_CREDENTIALS_ID = 'mongo-uri'
+    }
     }
 
     stages {
@@ -46,6 +51,26 @@ pipeline {
                         """
                     }
                 }
+            }
+        }
+
+        stage('Deploy to Host Machine') {
+            steps {
+                script {
+                    withCredentials([sshUserPrivateKey(credentialsId: HOST_SSH_CREDENTIALS, keyFileVariable: 'SSH_KEY'), 
+                                     string(credentialsId: MONGO_URI_CREDENTIALS_ID, variable: 'MONGO_URI')]) {
+                        sh """
+                        ssh -i $SSH_KEY -o StrictHostKeyChecking=no ${env.HOST_MACHINE_USER}@${env.HOST_MACHINE_IP} '
+                            docker pull ${DOCKERHUB_REPO}:latest
+                            docker stop fileuploader || true
+                            docker rm fileuploader || true
+                            docker run -d -p 4000:4000 --name fileuploader \
+                                -e MONGO_URI="$MONGO_URI" \
+                                -e PORT="4000" \
+                                ${DOCKERHUB_REPO}:latest
+                        '
+                        """
+                    }
             }
         }
     }
