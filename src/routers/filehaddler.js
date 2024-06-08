@@ -4,6 +4,7 @@ const file = require('../controller/filehaddler')
 const path = require('path')
 
 router.post("/upload", file.uploadFile);
-router.get("/delete", file.deleteFile);
+router.delete("/delete", file.deleteFile);
+router.get("/findOnefile",file.findSingleFile);
 
 module.exports = router
