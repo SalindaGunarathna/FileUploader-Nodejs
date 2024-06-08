@@ -4,7 +4,7 @@ require("dotenv").config();
 const path = require("path");
 const fs = require("fs");
 const { v4: uuidv4 } = require('uuid');
-const File = require("../models/file"); // Ensure correct model import
+const File = require("../models/file");
 
 const publicDirectory = path.join(__dirname, "..", "..", "public");
 const fileDirectory = path.join(publicDirectory, "file");
@@ -24,7 +24,7 @@ exports.uploadFile = async (req, res, next) => {
         const uniqueFilename = `${uniqueId}${fileExtension}`;
         const filePath = path.join(fileDirectory, uniqueFilename);
 
-        await image.mv(filePath); // Use Promise here
+        await image.mv(filePath);
 
         const dbFilePath = `file/${uniqueFilename}`;
 
@@ -70,4 +70,24 @@ exports.deleteFile = async (req, res, next) => {
         console.error(error);
         next(error);
     }
+}
+
+exports.findSingleFile = async (req, res, next) => {
+    try {
+
+        if (req.File) {
+            const filepath = req.body
+            const file = await File.find({ path: filepath })
+            res.sendStatus(200).join(file)
+
+        } else {
+            throw createHttpError(404, "file path is null ,please provide file path")
+        }
+
+    } catch (error) {
+        console.log(error)
+        next(error)
+
+    }
+
 }
