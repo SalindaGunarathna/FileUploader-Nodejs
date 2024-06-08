@@ -76,10 +76,10 @@ exports.findSingleFile = async (req, res, next) => {
     try {
 
         if (req.body.filepath) {
-            
+
             const {filepath} = req.body
             const file = await File.find({ path: filepath })
-            res.sendStatus(200).join(file)
+            res.sendStatus(200).json(file)
 
         } else {
             throw createHttpError(404, "file path is null ,please provide file path")
