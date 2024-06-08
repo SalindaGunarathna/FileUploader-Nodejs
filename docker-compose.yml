@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    ports:
+      - "${PORT}:${PORT}" # Map the container's port to the host's port
+    environment:
+      - PORT=${PORT}        # Environment variable for the application port
+      - MONGO_URI=${MONGO_URI}    # Environment variable for the database URL
+    volumes:
+      - .:/usr/src/app     # Mount the current directory to the container's working directory
+      - ./public:/usr/src/app/public 
