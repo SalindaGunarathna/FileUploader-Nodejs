@@ -54,16 +54,21 @@ exports.deleteFile = async (req, res, next) => {
         const fileToDeletePath = path.join(publicDirectory, filepath);
 
         fs.unlink(fileToDeletePath, async (err) => {
-            if (err) {
-                console.error("Unable to delete local image file:", err);
-                throw createHttpError(500, "File deletion failed");
+            try {
+                if (err) {
+                    console.error("Unable to delete local image file:", err);
+                    throw createHttpError(500, "File deletion failed");
+                }
+
+                console.log("Local image file deleted successfully.");
+
+                const image = await File.deleteOne({ path: filepath });
+
+                res.sendStatus(204).json({ message: `image  deleted successfully. Path: ${filePath}` });
+            } catch (error) {
+                console.error(error);
+                next(error);
             }
-
-            console.log("Local image file deleted successfully.");
-
-          const image =  await File.deleteOne({ path: filepath });
-
-            res.sendStatus(204).json({ message: `image  deleted successfully. Path: ${filePath}` });
         });
 
     } catch (error) {
@@ -71,6 +76,7 @@ exports.deleteFile = async (req, res, next) => {
         next(error);
     }
 }
+
 
 exports.findSingleFile = async (req, res, next) => {
     try {
