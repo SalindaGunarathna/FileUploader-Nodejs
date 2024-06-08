@@ -5,11 +5,10 @@ pipeline {
         DOCKER_CREDENTIALS_ID = 'dockerhub' 
         DOCKERHUB_REPO = 'salindadocker/fileuploder' 
         DOCKERHUB_API_URL = "https://hub.docker.com/v2/repositories/${DOCKERHUB_REPO}/"
-        HOST_SSH_CREDENTIALS ="hostmachine-ssh-id"
+        HOST_SSH_CREDENTIALS = 'hostmachine-ssh-id'
         HOST_MACHINE_IP = '54.221.77.162' 
         HOST_MACHINE_USER = 'client' 
         MONGO_URI_CREDENTIALS_ID = 'mongo-url'
-    }
     }
 
     stages {
@@ -31,8 +30,8 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('', DOCKER_CREDENTIALS_ID) {
-                        dockerImage.push("${env.BUILD_ID}")
-                        dockerImage.push("latest")
+                        dockerImage.push("${DOCKERHUB_REPO}:${env.BUILD_ID}")
+                        dockerImage.push("${DOCKERHUB_REPO}:latest")
                     }
                 }
             }
@@ -57,10 +56,12 @@ pipeline {
         stage('Deploy to Host Machine') {
             steps {
                 script {
-                    withCredentials([sshUserPrivateKey(credentialsId: HOST_SSH_CREDENTIALS, keyFileVariable: 'SSH_KEY'), 
-                                     string(credentialsId: MONGO_URI_CREDENTIALS_ID, variable: 'MONGO_URI')]) {
+                    withCredentials([
+                        sshUserPrivateKey(credentialsId: HOST_SSH_CREDENTIALS, keyFileVariable: 'SSH_KEY'), 
+                        string(credentialsId: MONGO_URI_CREDENTIALS_ID, variable: 'MONGO_URI')
+                    ]) {
                         sh """
-                        ssh -i $SSH_KEY -o StrictHostKeyChecking=no ${env.HOST_MACHINE_USER}@${env.HOST_MACHINE_IP} '
+                        ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no ${HOST_MACHINE_USER}@${HOST_MACHINE_IP} '
                             docker pull ${DOCKERHUB_REPO}:latest
                             docker stop fileuploader || true
                             docker rm fileuploader || true
@@ -71,6 +72,7 @@ pipeline {
                         '
                         """
                     }
+                }
             }
         }
     }
