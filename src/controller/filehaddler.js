@@ -30,7 +30,7 @@ exports.uploadFile = async (req, res, next) => {
 
         const newFile = new File({
             name: image.name,
-            path: dbFilePath,
+            filepath: dbFilePath,
             directory: filePath,
             size: image.size
         });
@@ -47,7 +47,9 @@ exports.uploadFile = async (req, res, next) => {
 exports.deleteFile = async (req, res, next) => {
     try {
         const { filepath } = req.body;
-        if (!filepath) {
+
+
+        if (filepath === undefined || filepath === null || filepath === "") {
             throw createHttpError(400, "File path is required");
         }
 
@@ -58,13 +60,15 @@ exports.deleteFile = async (req, res, next) => {
                 if (err) {
                     console.error("Unable to delete local image file:", err);
                     throw createHttpError(500, "File deletion failed");
+                } else {
+
+                    console.log("Local image file deleted successfully.");
+                    await File.deleteOne({ filepath: filepath });
+                    res.status(200).json({ message: `Image deleted successfully. Path: ${filepath}` });
+
                 }
 
-                console.log("Local image file deleted successfully.");
 
-                const image = await File.deleteOne({ path: filepath });
-
-                res.sendStatus(204).json({ message: `image  deleted successfully. Path: ${filePath}` });
             } catch (error) {
                 console.error(error);
                 next(error);
@@ -83,13 +87,16 @@ exports.findSingleFile = async (req, res, next) => {
 
         if (req.body.filepath) {
 
-            const {filepath} = req.body
+            const { filepath } = req.body
 
-            const file = await File.find({ path: filepath })
-            if (!file){
-                throw createHttpError(404,"image not found ")
-            }
-            res.status(200).json(file)
+            const file = await File.findOne({filepath: filepath })
+           
+            if (!file) {
+                throw createHttpError(404, "Image not found");
+            }else{
+                res.status(200).json(file);
+            }         
+           
 
         } else {
             throw createHttpError(404, "file path is null ,please provide file path")
