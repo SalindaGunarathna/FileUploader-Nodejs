@@ -14,7 +14,7 @@ pipeline {
         DOCKERHUB_REPO = 'salindadocker/fileuploder' 
         DOCKERHUB_API_URL = "https://hub.docker.com/v2/repositories/${DOCKERHUB_REPO}/"
         HOST_SSH_CREDENTIALS = 'hostmachine-ssh-id'
-        HOST_MACHINE_IP = '${params.HOST_MACHINE_IP}' 
+        HOST_MACHINE_IP = "${params.HOST_MACHINE_IP}" 
         HOST_MACHINE_USER = 'client' 
         MONGO_URI_CREDENTIALS_ID = 'mongo-url'
     }
