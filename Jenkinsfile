@@ -70,16 +70,16 @@ pipeline {
                 }
             }
         }
-
-        // Deploy to host machine
+        
         stage('Deploy to Host Machine') {
             steps {
                 script {
                     withCredentials([
-                        sshUserPrivateKey(credentialsId: HOST_SSH_CREDENTIALS, keyFileVariable: 'SSH_KEY'), 
+                        sshUserPrivateKey(credentialsId: HOST_SSH_CREDENTIALS, keyFileVariable: 'SSH_KEY'),  
                         string(credentialsId: MONGO_URI_CREDENTIALS_ID, variable: 'MONGO_URI')
                     ]) {
-                        sh """
+                        withEnv(["SSH_KEY=$SSH_KEY", "MONGO_URI=$MONGO_URI"]) {
+                        sh '''
                         ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no ${HOST_MACHINE_USER}@${HOST_MACHINE_IP} '
                             docker pull ${DOCKERHUB_REPO}:latest
                             docker stop fileuploader || true
@@ -89,7 +89,8 @@ pipeline {
                                 -e PORT="4000" \
                                 ${DOCKERHUB_REPO}:latest
                         '
-                        """
+                        '''
+                    }
                     }
                 }
             }
