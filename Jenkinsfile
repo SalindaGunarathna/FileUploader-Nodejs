@@ -17,6 +17,12 @@ pipeline {
                 checkout scm
             }
         }
+        stage('Run Unit Tests') {
+            steps {
+                sh 'npm install'
+                sh 'npm test'
+            }
+        }
 
         stage('Build Docker Image') {
             steps {
