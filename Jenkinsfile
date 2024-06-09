@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'NodeJS' 
+    }
+
     environment {
         DOCKER_CREDENTIALS_ID = 'dockerhub' 
         DOCKERHUB_REPO = 'salindadocker/fileuploder' 
