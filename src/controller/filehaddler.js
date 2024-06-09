@@ -11,18 +11,24 @@ const fileDirectory = path.join(publicDirectory, "file");
 
 exports.uploadFile = async (req, res, next) => {
     try {
-        const image = req.files.image;
-        if (!image) {
+
+       
+        if (!req.files || !req.files.image) {
             throw createHttpError(404, "Image not found");
+        }else if (req.files !=null){
+            var image = req.files.image;
+
         }
-        if (!image.mimetype.startsWith("image")) {
-            throw createHttpError(400, "Only images are allowed");
+        
+         if (!image.mimetype.startsWith("image")) {
+            throw createHttpError(400, "Only images are allowed");       
         }
+
 
         const uniqueId = uuidv4();
         const fileExtension = path.extname(image.name);
         const uniqueFilename = `${uniqueId}${fileExtension}`;
-        const filePath = path.join(fileDirectory, uniqueFilename);
+        const filePath = path.join(fileDirectory, uniqueFilename);   
 
         await image.mv(filePath);
 
