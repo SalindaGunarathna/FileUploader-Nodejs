@@ -4,10 +4,11 @@ pipeline {
     tools {
         nodejs 'Nodejs' 
     }
+    // Define parameters
     parameters {
         string(name: 'HOST_MACHINE_IP', defaultValue: '52.23.231.169', description: 'IP address of the host machine')
     }
-
+    // Define environment variables
     environment {
         DOCKER_CREDENTIALS_ID = 'dockerhub' 
         DOCKERHUB_REPO = 'salindadocker/fileuploder' 
@@ -17,13 +18,14 @@ pipeline {
         HOST_MACHINE_USER = 'client' 
         MONGO_URI_CREDENTIALS_ID = 'mongo-url'
     }
-
+    // Define stages
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
+        // Run unit tests using Jest
         stage('Run Unit Tests') {
             steps {
                 sh 'npm install'
@@ -31,6 +33,7 @@ pipeline {
             }
         }
 
+        // Build Docker image
         stage('Build Docker Image') {
             steps {
                 script {
@@ -39,6 +42,7 @@ pipeline {
             }
         }
 
+        // Push Docker image
         stage('Push Docker Image') {
             steps {
                 script {
@@ -50,6 +54,7 @@ pipeline {
             }
         }
 
+        // Set image to public
         stage('Set Image to Public') {
             steps {
                 script {
@@ -66,6 +71,7 @@ pipeline {
             }
         }
 
+        // Deploy to host machine
         stage('Deploy to Host Machine') {
             steps {
                 script {
