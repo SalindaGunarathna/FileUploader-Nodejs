@@ -1,8 +1,11 @@
 pipeline {
     agent any
-    
+
     tools {
         nodejs 'Nodejs' 
+    }
+    parameters {
+        string(name: 'HOST_MACHINE_IP', defaultValue: '52.23.184.130', description: 'IP address of the host machine')
     }
     environment {
         DOCKER_CREDENTIALS_ID = 'dockerhub' 
