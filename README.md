@@ -9,14 +9,14 @@ This Node.js backend application provides a robust file upload service, allowing
 To run this application using Docker, use the following command:
 
 ```sh
-docker run -e MONGODB_URL="your_mongodb_database_url" -e PORT=4000 -p 4000:4000 salindadocker/fileuploder
+docker run -e MONGODB_URL="your_mongodb_database_url" -e PORT=your_pot -p your_pot:4000 salindadocker/fileuploder
 
 ```
 Replace your_mongodb_database_url with the URL of your MongoDB database.
 ### Step 2: Uploading an Image
 To upload an image, send a POST request to the following API endpoint:
 ```sh
-http://{{IP}}:4000/api/v1/upload
+http://{{IP}}:your_pot/api/v1/upload
 ````
 In the request body, share the attribute name image and attach the image file. The response will provide you with details about the uploaded file.
 
@@ -33,12 +33,12 @@ Example Response:
 ### Step 3: Accessing the Uploaded Image
 You can access the uploaded image via the following URL format:
 ```
-http://localhost:4000/public/file/b80f8bd0-752d-4bd7-903e-c114b40fd7a2.webp
+http://{{IP}}:your_pot/public/file/b80f8bd0-752d-4bd7-903e-c114b40fd7a2.webp
 ```
 ### Step 4: Deleting an Image
 To delete an uploaded image, send a DELETE request to the following API endpoint:
 ```
-http://{{IP}}:4000/api/v1/delete
+http://{{IP}}:your_pot/api/v1/delete
 ```
 In the request body, provide the filepath of the image you want to delete.
 
@@ -51,7 +51,7 @@ Example Request Body:
 ### Step 5: Finding a Specific Image
 To find a specific image, send a POST request to the following API endpoint:
 ```
-http://{{IP}}:4000/api/v1/findOnefile
+http://{{IP}}:your_pot/api/v1/findOnefile
 ```
 In the request body, provide the filepath of the image you want to find.
 
