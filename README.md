@@ -9,16 +9,16 @@ This Node.js backend application provides a robust file upload service, allowing
 To run this application using Docker, use the following command:
 
 ```sh
-docker run -e MONGODB_URL="your_mongodb_database_url" -e PORT=your_pot -p your_pot:4000 salindadocker/fileuploder
+docker run -e MONGO_URI="your_mongodb_database_url" -e PORT=your_pot -p your_pot:4000 salindadocker/fileuploder
 
 ```
 Replace your_mongodb_database_url with the URL of your MongoDB database.
 ### Step 2: Uploading an Image
 To upload an image, send a POST request to the following API endpoint:
 ```sh
-http://{{IP}}:your_pot/api/v1/upload
+http://{{API}}:your_pot/api/v1/upload
 ````
-In the request body, share the attribute name image and attach the image file. The response will provide you with details about the uploaded file.
+In the request body, share the attribute name: "image"  and attach the image file. The response will provide you with details about the uploaded file.
 
 Example Response:
 ```
